@@ -1,0 +1,3 @@
+maxstudents: 20
+randomStudent:
+  url: https://randomuser.me/api/
