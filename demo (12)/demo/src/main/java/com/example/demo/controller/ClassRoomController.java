@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/class")
+@CrossOrigin
 public class ClassRoomController {
     @Autowired
     ClassRoomService classRoomService;
