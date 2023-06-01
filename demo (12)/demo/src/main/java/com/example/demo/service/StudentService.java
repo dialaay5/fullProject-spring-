@@ -68,9 +68,8 @@ public class StudentService implements IStudentService{
     @Override
     public StudentClassResponse DtoStudentsClass(Integer id){
         ClassRoom selectedClass = classRoomRepository.getClassRoomById(id);
-        Student classStudentToCreat = new Student();
         List<Student> students = studentRepository.getStudentsByClassRoomId(id);
-        return classStudentToCreat.toStudentClassResponse(selectedClass, students);
+        return new StudentClassResponse(selectedClass, students);
     }
 }
 

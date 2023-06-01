@@ -39,10 +39,4 @@ public class Student {
                 ", class_id=" + class_id +
                 '}';
     }
-
-    public StudentClassResponse toStudentClassResponse(ClassRoom classRoom, List<Student> studentList){
-        return new StudentClassResponse(
-                classRoom,studentList
-        );
-    }
 }
