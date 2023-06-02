@@ -2,7 +2,11 @@ package com.example.demo;
 
 import com.example.demo.model.ClassRoom;
 import com.example.demo.model.ClassRoomType;
+import com.example.demo.model.Student;
+import com.example.demo.model.StudentGender;
 import com.example.demo.repository.ClassRoomRepository;
+import com.example.demo.repository.StudentRepository;
+import com.example.demo.service.StudentService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,7 +25,7 @@ public class DemoApplication {
 	}
 
 	@Bean
-	CommandLineRunner commandLineRunner(JdbcTemplate jdbcTemplate, ClassRoomRepository classRoomRepository) {
+	CommandLineRunner commandLineRunner(JdbcTemplate jdbcTemplate, ClassRoomRepository classRoomRepository, StudentService studentService) {
 		return args -> {
 			jdbcTemplate.execute(
 					"DROP TABLE IF EXISTS classRoom cascade;\n" +
@@ -41,6 +45,18 @@ public class DemoApplication {
 							"    FOREIGN KEY (class_id) REFERENCES classRoom(id));");
 
 			classRoomRepository.createClassRoom(new ClassRoom(0,0,0.0f, ClassRoomType.EXTERNAL));
+			classRoomRepository.createClassRoom(new ClassRoom(0,0,0.0f, ClassRoomType.REGULAR));
+			classRoomRepository.createClassRoom(new ClassRoom(0,0,0.0f, ClassRoomType.EXTERNAL));
+			classRoomRepository.createClassRoom(new ClassRoom(0,0,0.0f, ClassRoomType.REGULAR));
+
+			studentService.createStudent(new Student(0,"Ayoub","Diala",100.0f,StudentGender.FEMALE,1));
+			studentService.createStudent(new Student(0,"Abutbul","Tal",100.0f,StudentGender.MALE,2));
+			studentService.createStudent(new Student(0,"Cohen","Yaniv",100.0f,StudentGender.MALE,3));
+			studentService.createStudent(new Student(0,"Dassi","Dassi",100.0f,StudentGender.FEMALE,4));
+
+
+
+
 		};
 	}
 
