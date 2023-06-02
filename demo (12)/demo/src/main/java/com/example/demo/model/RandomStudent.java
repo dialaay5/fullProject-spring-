@@ -6,13 +6,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RandomStudent {
-    protected StudentGender gender;
+    protected String gender;
     protected Name name;
 
     public RandomStudent() {
     }
 
-    public RandomStudent(StudentGender gender, Name name) {
+    public RandomStudent(String gender, Name name) {
         this.gender = gender;
         this.name = name;
     }

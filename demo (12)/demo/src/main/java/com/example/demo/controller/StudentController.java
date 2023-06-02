@@ -149,11 +149,15 @@ public class StudentController {
         RandomStudentResponse response = apiClient.getRandomStudent();
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
+        //to convert a String value of gender to an enum
+        StudentGender studentGender = StudentGender.valueOf((response.getResults().get(0).getGender()).toUpperCase());
+
+
         //create new student and insert to student table
         Student student = new Student(0,response.getResults().get(0).getName().getLastName()
                 ,response.getResults().get(0).getName().getFirstName()
                 ,avgGrade
-                ,response.getResults().get(0).getGender()
+                ,studentGender
                 ,class_id);
         try{
             String result = studentService.createStudent(student);
