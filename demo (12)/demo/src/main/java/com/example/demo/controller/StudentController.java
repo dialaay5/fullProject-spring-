@@ -18,6 +18,7 @@ import java.util.Random;
 
 @RestController
 @RequestMapping("/api/student")
+@CrossOrigin
 public class StudentController {
     @Autowired
     StudentService studentService;
