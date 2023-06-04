@@ -64,12 +64,13 @@ public class StudentService implements IStudentService{
         return studentRepository.getStudentsByClassRoomType();
     }
 
-    // DTO
+    // DTO RESPONSE
     @Override
     public StudentClassResponse DtoStudentsClass(Integer id){
         ClassRoom selectedClass = classRoomRepository.getClassRoomById(id);
         List<Student> students = studentRepository.getStudentsByClassRoomId(id);
-        return new StudentClassResponse(selectedClass, students);
+        StudentClassResponse dtoResponse = new StudentClassResponse();
+        return dtoResponse.response(selectedClass, students);
     }
 }
 

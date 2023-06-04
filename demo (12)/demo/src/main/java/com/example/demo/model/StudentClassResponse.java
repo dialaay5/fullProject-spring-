@@ -18,8 +18,9 @@ public class StudentClassResponse {
         this.studentList = studentList;
     }
 
-
-
-
+    //DTO RESPONSE
+    public StudentClassResponse response(ClassRoom classRoom, List<Student> studentList){
+        return new StudentClassResponse(classRoom,studentList);
+    }
 }
 
