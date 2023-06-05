@@ -1,0 +1,21 @@
+.body {
+    background-color: rgb(226, 238, 249);
+}
+
+.table-header {
+    background-color: rgba(114, 178, 187, 0.697);
+    font-size: larger;
+    font-family: Serif;
+    font-weight: bold;
+}
+
+.tr {
+    font-size: larger;
+    font-family: Serif;
+}
+
+.btn {
+    font-size: larger;
+    font-family: Serif;
+    font-weight: bold;
+}

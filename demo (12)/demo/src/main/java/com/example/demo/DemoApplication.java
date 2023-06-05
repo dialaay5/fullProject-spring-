@@ -5,7 +5,6 @@ import com.example.demo.model.ClassRoomType;
 import com.example.demo.model.Student;
 import com.example.demo.model.StudentGender;
 import com.example.demo.repository.ClassRoomRepository;
-import com.example.demo.repository.StudentRepository;
 import com.example.demo.service.StudentService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -17,7 +16,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootApplication
 @EnableFeignClients
-
 public class DemoApplication {
 
 	public static void main(String[] args) {
