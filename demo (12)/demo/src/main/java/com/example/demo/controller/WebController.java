@@ -12,7 +12,7 @@ public class WebController {
     public ModelAndView home()
     {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("index");
+        modelAndView.setViewName("index"); //השם של הקובץ שרוצים להציג אותו (index.html)
         return modelAndView;
     }
 }
