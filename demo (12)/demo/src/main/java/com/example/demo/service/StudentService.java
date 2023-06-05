@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+
 @Service
 public class StudentService implements IStudentService{
     @Autowired
@@ -22,31 +24,31 @@ public class StudentService implements IStudentService{
     @Value("${maxstudents}")
     private Integer maxstudents;
     @Override
-    public String createStudent(Student student) {
+    public Student createStudent(Student student) throws ClientFaultException {
         if (classRoomRepository.getClassRoomById(student.getClass_id()).getClassRoomType().equals(ClassRoomType.EXTERNAL) &&
                 classRoomRepository.getClassRoomById(student.getClass_id()).getNumberOfStudents() >= maxstudents){
-            return  "{\"Warning\": \"Cannot create more students in external classRoom\" }";
+            throw new ExceedExternalException("Cannot create more students in external classRoom");
         }
-        String result = studentRepository.createStudent(student);
+        Student result = studentRepository.createStudent(student);
         classRoomRepository.synchronizationClassAvg_countOfStudents(student.getClass_id());
         return result;
     }
 
     @Override
-    public String updateStudent(Student student, Integer id) {
+    public void updateStudent(Student student, Integer id) throws ClientFaultException {
         Integer class_id_before_update = studentRepository.getStudentById(id).getClass_id();
-        String result = studentRepository.updateStudent(student,id);
+        if(class_id_before_update.intValue() !=  student.getClass_id().intValue()){
+            throw new CannotChangeClassIdException("Cannot change class_id");
+        }
+        studentRepository.updateStudent(student,id);
         classRoomRepository.synchronizationClassAvg_countOfStudents(class_id_before_update);
-        return result;
     }
 
     @Override
-    public String deleteStudent(Integer id) {
+    public void deleteStudent(Integer id) {
         Integer student_classRoom_id = studentRepository.getStudentById(id).getClass_id();
-        String result = studentRepository.deleteStudent(id);
+        studentRepository.deleteStudent(id);
         classRoomRepository.synchronizationClassAvg_countOfStudents(student_classRoom_id);
-        return result;
-
     }
 
     @Override

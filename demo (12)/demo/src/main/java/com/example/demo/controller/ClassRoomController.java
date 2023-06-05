@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.ClassRoom;
+import com.example.demo.model.ClientFaultException;
 import com.example.demo.service.ClassRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,48 +18,36 @@ public class ClassRoomController {
     ClassRoomService classRoomService;
 
     @GetMapping
-    public List<ClassRoom> get() {
-        return classRoomService.getAllClassRooms();
+    public ResponseEntity get() {
+        try {
+            List<ClassRoom> list = classRoomService.getAllClassRooms();
+            return new ResponseEntity<List<ClassRoom>>(list, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<String>("{ \"Error\": \"" + e.toString() + "\" }",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity getById(@PathVariable Integer id) {
-        try {
             ClassRoom result = classRoomService.getClassRoomById(id);
             if (result != null) {
                 return new ResponseEntity<ClassRoom>(result, HttpStatus.OK);
             }
             return new ResponseEntity<String>("{ \"Warning\": \"not found classRoom with Id " + id + "\" }",
                     HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<String>("{ \"Error\": \"" + e.toString() + "\" }",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @PostMapping()
-    public ResponseEntity<String> post(@RequestBody ClassRoom classRoom) {
-        try{
-            String result = classRoomService.createClassRoom(classRoom);
-            if (result == null) {
-                return new ResponseEntity<String>("{ \"result\": \"classRoom created\" }", HttpStatus.CREATED);
+    public ResponseEntity post(@RequestBody ClassRoom classRoom) {
+        try {
+            ClassRoom postClassRoom = classRoomService.createClassRoom(classRoom);
+                return new ResponseEntity<ClassRoom>(postClassRoom, HttpStatus.CREATED);
             }
-            return new ResponseEntity<String>(result, HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return new ResponseEntity<String>("{ \"Error\": \"" + e.toString() + "\" }",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<String> put(@PathVariable Integer id, @RequestBody ClassRoom classRoom){
-        try{
-            String result = classRoomService.updateClassRoom(classRoom, id);
-            if (result == null) {
-                return new ResponseEntity<String>("{ \"result\": \"classRoom updated\" }", HttpStatus.OK);
-            }
-            return new ResponseEntity<String>(result, HttpStatus.BAD_REQUEST);
+        catch (ClientFaultException e){
+            return new ResponseEntity<String>("{ \"Client Error\": \"" +e.toString() + "\" }",
+                    HttpStatus.BAD_REQUEST);
         }
         catch (Exception e) {
             return new ResponseEntity<String>("{ \"Error\": \"" + e.toString() + "\" }",
@@ -67,21 +56,43 @@ public class ClassRoomController {
     }
 
 
-
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> delete(@PathVariable Integer id) {
+    @PutMapping(value = "/{id}")
+    public ResponseEntity put(@PathVariable Integer id, @RequestBody ClassRoom classRoom) {
         try {
-            String result = classRoomService.deleteClassRoom(id);
-            if (result == null) {
-                return new ResponseEntity<String>("{ \"result\": \"classRoom deleted\" }", HttpStatus.OK);
-            }
-            return new ResponseEntity<String>(result, HttpStatus.BAD_REQUEST);
-
+            classRoomService.updateClassRoom(classRoom, id);
+            return new ResponseEntity<ClassRoom>(classRoom, HttpStatus.OK);
+        }
+        catch (ClientFaultException e){
+            return new ResponseEntity<String>("{ \"Client Error\": \"" +e.toString() + "\" }",
+                    HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<String>("{ \"Error\": \"" + e.toString() + "\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<String> delete(@PathVariable Integer id) {
+        try {
+            ClassRoom classRoomById = classRoomService.getClassRoomById(id);
+            if (classRoomById != null) {
+                classRoomService.deleteClassRoom(id);
+                return new ResponseEntity<String>("{ \"Result\": \"classRoom deleted\" }", HttpStatus.OK);
+            }
+            return new ResponseEntity<String>("{ \"Warning\": \"not found classRoom with this Id = " + id + "\" }",
+                    HttpStatus.NOT_FOUND);
+        }
+        catch (ClientFaultException e) {
+            return new ResponseEntity<String>("{ \"Client Error\": \"" +e.toString() + "\" }",
+                            HttpStatus.BAD_REQUEST);
+        }
+         catch(Exception e){
+            return new ResponseEntity<String>("{ \"Error\": \"" + e.toString() + "\" }",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
+
 
 

@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.model.ClassRoom;
-import com.example.demo.model.ClassRoomType;
+import com.example.demo.model.*;
 import com.example.demo.repository.ClassRoomRepository;
 import com.example.demo.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,27 +18,25 @@ public class ClassRoomService implements IClassRoomService{
     @Value("${maxstudents}")
     private Integer maxstudents;
     @Override
-    public String createClassRoom(ClassRoom classRoom) {
+    public ClassRoom createClassRoom(ClassRoom classRoom) throws ClientFaultException {
         return classRoomRepository.createClassRoom(classRoom);
     }
 
     @Override
-    public String updateClassRoom(ClassRoom classRoom, Integer id) throws Exception {
+    public void updateClassRoom(ClassRoom classRoom, Integer id) throws ClientFaultException {
         if (classRoom.getClassRoomType().equals(ClassRoomType.EXTERNAL) && classRoom.getNumberOfStudents() >= maxstudents){
-            return ("{\"Warning\": \"Cannot change the class room type because there are more than 20 students\" }");
+            throw new NotIllegalChangeClassType("Cannot change the class room type because there are more than 20 students");
         }
-        String result = classRoomRepository.updateClassRoom(classRoom, id);
-        return result;
+        classRoomRepository.updateClassRoom(classRoom, id);
     }
 
 
     @Override
-    public String deleteClassRoom(Integer id) throws Exception {
+    public void deleteClassRoom(Integer id) throws ClientFaultException {
         if(classRoomRepository.getClassRoomById(id).getNumberOfStudents() >= 1 ){
-            return ("{\"Warning\": \"Cannot delete this classRoom\" }");
+            throw new ClassNotEmptyException("Cannot delete this classRoom because its not empty ");
         }
-        String result =  classRoomRepository.deleteClassRoom(id);
-        return result;
+        classRoomRepository.deleteClassRoom(id);
     }
 
     @Override

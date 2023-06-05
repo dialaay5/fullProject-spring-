@@ -1,15 +1,16 @@
 package com.example.demo.service;
 
 import com.example.demo.model.ClassRoom;
+import com.example.demo.model.ClientFaultException;
 
 import java.util.List;
 
 public interface IClassRoomService {
-    String createClassRoom(ClassRoom classRoom);
+    ClassRoom createClassRoom(ClassRoom classRoom) throws ClientFaultException;
 
-    String updateClassRoom(ClassRoom classRoom, Integer id) throws Exception;
+    void updateClassRoom(ClassRoom classRoom, Integer id) throws ClientFaultException;
 
-    String deleteClassRoom(Integer id) throws Exception;
+    void deleteClassRoom(Integer id) throws ClientFaultException;
 
     List<ClassRoom> getAllClassRooms();
 

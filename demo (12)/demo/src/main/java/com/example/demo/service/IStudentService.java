@@ -1,15 +1,14 @@
 package com.example.demo.service;
-import com.example.demo.model.Student;
-import com.example.demo.model.StudentClassResponse;
+import com.example.demo.model.*;
 
 import java.util.List;
 
 public interface IStudentService {
-    String createStudent(Student student);
+    Student createStudent(Student student) throws ClientFaultException;
 
-    String updateStudent(Student student, Integer id);
+    void updateStudent(Student student, Integer id) throws ClientFaultException;
 
-    String deleteStudent(Integer id);
+    void deleteStudent(Integer id);
 
     List<Student> getAllStudents();
 

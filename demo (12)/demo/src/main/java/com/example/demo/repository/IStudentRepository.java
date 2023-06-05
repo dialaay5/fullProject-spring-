@@ -1,15 +1,17 @@
 package com.example.demo.repository;
 
+import com.example.demo.model.AllDataAlreadyExistException;
+import com.example.demo.model.ClientFaultException;
 import com.example.demo.model.Student;
 
 import java.util.List;
 
 public interface IStudentRepository {
-    String createStudent(Student student);
+    Student createStudent(Student student) throws ClientFaultException;
 
-    String updateStudent(Student student, Integer id);
+    void updateStudent(Student student, Integer id);
 
-    String deleteStudent(Integer id);
+    void deleteStudent(Integer id);
 
     List<Student> getAllStudents();
 

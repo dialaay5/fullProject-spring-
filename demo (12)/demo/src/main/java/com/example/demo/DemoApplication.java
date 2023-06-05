@@ -55,10 +55,6 @@ public class DemoApplication {
 			studentService.createStudent(new Student(0,"Dassi","Dassi",100.0f,StudentGender.FEMALE,4));
 			studentService.createStudent(new Student(0,"Levi","Danny",80.0f,StudentGender.MALE,1));
 
-
-
-
-
 		};
 	}
 

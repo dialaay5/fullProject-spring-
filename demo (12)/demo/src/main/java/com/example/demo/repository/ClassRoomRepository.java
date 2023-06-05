@@ -1,13 +1,23 @@
 package com.example.demo.repository;
 
+import com.example.demo.model.AllDataAlreadyExistException;
 import com.example.demo.model.ClassRoom;
 import com.example.demo.model.ClassRoomMapper;
+import com.example.demo.model.ClientFaultException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 @Repository
 public class ClassRoomRepository implements IClassRoomRepository{
 
@@ -17,39 +27,49 @@ public class ClassRoomRepository implements IClassRoomRepository{
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private DataSource dataSource;
 
     @Override
-    public String createClassRoom(ClassRoom classRoom) {
+    public ClassRoom createClassRoom(ClassRoom classRoom) throws ClientFaultException {
         try {
-            String query = String.format("INSERT INTO %s (numberOfStudents, classAvg, classRoomType) VALUES (?, ?, ?)", CLASSROOM_TABLE_NAME);
-            jdbcTemplate.update(query, classRoom.getNumberOfStudents(), classRoom.getClassAvg(),classRoom.getClassRoomType().name());
-            return null;
-        } catch (Exception e) {
-            return "{\"Error\": \"" + e.toString() + "\" }";
+            NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+
+            String queryNamedParam = String.format("INSERT INTO %s (numberOfStudents, classAvg, classRoomType) VALUES (:numberOfStudents, :classAvg, :classRoomType)", CLASSROOM_TABLE_NAME);
+
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("numberOfStudents", classRoom.getNumberOfStudents());
+            params.put("classAvg", classRoom.getClassAvg());
+            params.put("classRoomType", classRoom.getClassRoomType().name());
+
+            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource(params);
+
+            GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+
+            namedParameterJdbcTemplate.update(queryNamedParam, mapSqlParameterSource, generatedKeyHolder);
+
+            Integer id = (Integer) generatedKeyHolder.getKeys().get("id");
+
+            classRoom.setId(id);
+            return classRoom;
+
+        }  catch (Exception e) {
+            throw new AllDataAlreadyExistException("There is not enough data to create a new class");
         }
     }
 
+
     @Override
-    public String updateClassRoom(ClassRoom classRoom, Integer id) {
-        try{
-            String query = String.format("UPDATE %s SET numberOfStudents=?, classAvg=?, classRoomType=?  WHERE id= ?", CLASSROOM_TABLE_NAME);
-            jdbcTemplate.update(query, classRoom.getNumberOfStudents(), classRoom.getClassAvg(),classRoom.getClassRoomType().name(), id);
-            return null;
-        } catch (Exception e) {
-            return "{\"Error\": \"" + e.toString() + "\" }";
-        }
+    public void updateClassRoom(ClassRoom classRoom, Integer id) {
+        String query = String.format("UPDATE %s SET numberOfStudents=?, classAvg=?, classRoomType=?  WHERE id= ?", CLASSROOM_TABLE_NAME);
+        jdbcTemplate.update(query, classRoom.getNumberOfStudents(), classRoom.getClassAvg(), classRoom.getClassRoomType().name(), id);
     }
 
     @Override
-    public String deleteClassRoom(Integer id) {
-        try{
+    public void deleteClassRoom(Integer id) {
             String query = String.format("DELETE FROM %s WHERE id= ?", CLASSROOM_TABLE_NAME);
             jdbcTemplate.update(query, id);
-            return null;
-        }
-        catch (Exception e) {
-            return "{\"Error\": \"" + e.toString() + "\" }";
-        }
     }
 
     @Override

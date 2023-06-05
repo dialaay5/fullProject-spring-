@@ -32,35 +32,35 @@ public class StudentController {
     RandomStudentService apiClient;
 
     @GetMapping
-    public List<Student> get()
-    {
-        return studentService.getAllStudents();
+    public ResponseEntity get(){
+    try {
+        List<Student> list = studentService.getAllStudents();
+        return new ResponseEntity<List<Student>>(list, HttpStatus.OK);
+    } catch (Exception e) {
+        return new ResponseEntity<String>("{ \"Error\": \"" + e.toString() + "\" }",
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
+}
 
     @GetMapping(value ="/{id}")
     public ResponseEntity getById(@PathVariable Integer id){
-        try {
             Student result = studentService.getStudentById(id);
             if (result != null) {
                 return new ResponseEntity<Student>(result, HttpStatus.OK);
             }
             return new ResponseEntity<String>("{ \"Warning\": \"not found student with Id " + id + "\" }",
                     HttpStatus.NOT_FOUND);
-        }
-        catch (Exception e) {
-            return new ResponseEntity<String>("{ \"Error\": \"" + e.toString() + "\" }",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @PostMapping()
-    public ResponseEntity<String> post(@RequestBody Student student){
+    public ResponseEntity post(@RequestBody Student student){
         try{
-            String result = studentService.createStudent(student);
-            if (result == null) {
-                return new ResponseEntity<String>("{ \"result\": \"student created\" }", HttpStatus.CREATED);
+            Student postStudent = studentService.createStudent(student);
+            return new ResponseEntity<Student>(postStudent, HttpStatus.CREATED);
             }
-            return new ResponseEntity<String>(result, HttpStatus.BAD_REQUEST);
+        catch (ClientFaultException e){
+            return new ResponseEntity<String>("{ \"Client Error\": \"" +e.toString() + "\" }",
+                    HttpStatus.BAD_REQUEST);
         }
         catch (Exception e) {
             return new ResponseEntity<String>("{ \"Error\": \"" + e.toString() + "\" }",
@@ -69,13 +69,14 @@ public class StudentController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<String>  put(@PathVariable Integer id, @RequestBody Student student) {
+    public ResponseEntity  put(@PathVariable Integer id, @RequestBody Student student) {
         try{
-            String result = studentService.updateStudent(student, id);
-            if (result == null) {
-                return new ResponseEntity<String>("{ \"result\": \"student updated\" }", HttpStatus.OK);
-            }
-            return new ResponseEntity<String>(result, HttpStatus.BAD_REQUEST);
+            studentService.updateStudent(student, id);
+            return new ResponseEntity<Student>(student, HttpStatus.OK);
+        }
+        catch (ClientFaultException e){
+            return new ResponseEntity<String>("{ \"Client Error\": \"" +e.toString() + "\" }",
+                    HttpStatus.BAD_REQUEST);
         }
         catch (Exception e) {
             return new ResponseEntity<String>("{ \"Error\": \"" + e.toString() + "\" }",
@@ -86,11 +87,13 @@ public class StudentController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> delete(@PathVariable Integer id){
         try{
-            String result = studentService.deleteStudent(id);
-            if (result == null) {
-                return new ResponseEntity<String>("{ \"result\": \"student deleted\" }", HttpStatus.OK);
+            Student studentById = studentService.getStudentById(id);
+            if (studentById != null) {
+                studentService.deleteStudent(id);
+                return new ResponseEntity<String>("{ \"Result\": \"student deleted\" }", HttpStatus.OK);
             }
-            return new ResponseEntity<String>(result, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>("{ \"Warning\": \"not found student with this Id = " + id + "\" }",
+                    HttpStatus.NOT_FOUND);
         }
         catch (Exception e) {
             return new ResponseEntity<String>("{ \"Error\": \"" + e.toString() + "\" }",
@@ -104,11 +107,7 @@ public class StudentController {
         //to get list of students in external classes (challenge)
         try {
             List<Student> result = studentService.getStudentsByClassRoomExternalType();
-            if (result.size() != 0) {
-                return new ResponseEntity<List<Student>>(result, HttpStatus.OK);
-            }
-            return new ResponseEntity<String>("{ \"Warning\": \"not found students in external classes " + "\" }",
-                    HttpStatus.NOT_FOUND);
+            return new ResponseEntity<List<Student>>(result, HttpStatus.OK);
         }
         catch (Exception e) {
             return new ResponseEntity<String>("{ \"Error\": \"" + e.toString() + "\" }",
@@ -135,7 +134,7 @@ public class StudentController {
     }
 
     @PostMapping(value = "randomStudent")
-    public ResponseEntity<String> postRandomStudent() {
+    public ResponseEntity postRandomStudent() {
         //get random class
         Integer listSize = classRoomService.getAllClassRooms().size();
         Random rand = new Random();
@@ -161,11 +160,12 @@ public class StudentController {
                 ,studentGender
                 ,class_id);
         try{
-            String result = studentService.createStudent(student);
-            if (result == null) {
-                return new ResponseEntity<String>("{ \"result\": \"random student created\" }", HttpStatus.CREATED);
+            Student result = studentService.createStudent(student);
+            return new ResponseEntity<Student>(result, HttpStatus.CREATED);
             }
-            return new ResponseEntity<String>(result, HttpStatus.BAD_REQUEST);
+        catch (ClientFaultException e){
+            return new ResponseEntity<String>("{ \"Client Error\": \"" +e.toString() + "\" }",
+                    HttpStatus.BAD_REQUEST);
         }
         catch (Exception e) {
             return new ResponseEntity<String>("{ \"Error\": \"" + e.toString() + "\" }",
