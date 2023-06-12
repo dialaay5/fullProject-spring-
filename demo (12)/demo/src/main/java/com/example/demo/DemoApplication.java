@@ -5,10 +5,12 @@ import com.example.demo.model.ClassRoomType;
 import com.example.demo.model.Student;
 import com.example.demo.model.StudentGender;
 import com.example.demo.repository.ClassRoomRepository;
+import com.example.demo.service.RedisDetailsConfig;
 import com.example.demo.service.StudentService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +18,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootApplication
 @EnableFeignClients
+@EnableConfigurationProperties(value = {RedisDetailsConfig.class})
 public class DemoApplication {
 
 	public static void main(String[] args) {
@@ -52,7 +55,6 @@ public class DemoApplication {
 			studentService.createStudent(new Student(0,"Cohen","Yaniv",100.0f,StudentGender.MALE,3));
 			studentService.createStudent(new Student(0,"Dassi","Dassi",100.0f,StudentGender.FEMALE,4));
 			studentService.createStudent(new Student(0,"Levi","Danny",80.0f,StudentGender.MALE,1));
-
 		};
 	}
 
