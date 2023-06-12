@@ -48,40 +48,50 @@ public class StudentService implements IStudentService{
         if(cache_on && cacheRepository.isKeyExist("CLASS" + (student.getClass_id()).toString())){
             cacheRepository.updateCacheEntity("CLASS" + (student.getClass_id()).toString(), objectMapper.writeValueAsString(classRoom));
         }
+        //מכיוון שבכל ריצה מאפסת את הטבלה מחדש אז צריך לעדכן גם את הפרטים של התלמיד שנעשה לו עדכון לפי ההרצה
+        if(cache_on && cacheRepository.isKeyExist("STUDENT" + (student.getId()).toString())){
+            cacheRepository.updateCacheEntity("STUDENT" + (student.getId()).toString(), objectMapper.writeValueAsString(student));
+        }
         return result;
     }
 
     @Override
     public void updateStudent(Student student, Integer id) throws ClientFaultException, JsonProcessingException {
-        Integer class_id_before_update = studentRepository.getStudentById(id).getClass_id();
-        if(class_id_before_update.intValue() !=  student.getClass_id().intValue()){
-            throw new CannotChangeClassIdException("Cannot change class_id");
-        }
-        studentRepository.updateStudent(student,id);
-        classRoomRepository.synchronizationClassAvg_countOfStudents(class_id_before_update);
+        Student studentUpdate = studentRepository.getStudentById(id);
+        if (studentUpdate != null) {
+            Integer class_id_before_update = studentRepository.getStudentById(id).getClass_id();
+            if (class_id_before_update.intValue() != student.getClass_id().intValue()) {
+                throw new CannotChangeClassIdException("Cannot change class_id");
+            }
+            studentRepository.updateStudent(student, id);
+            classRoomRepository.synchronizationClassAvg_countOfStudents(class_id_before_update);
 
-        ClassRoom result = classRoomRepository.getClassRoomById(class_id_before_update) ;
+            ClassRoom result = classRoomRepository.getClassRoomById(class_id_before_update);
 
-        if (cache_on && cacheRepository.isKeyExist("STUDENT" + id.toString())) {
-            cacheRepository.updateCacheEntity("STUDENT" + id.toString(), objectMapper.writeValueAsString(student));
-            if(cache_on && cacheRepository.isKeyExist("CLASS" + class_id_before_update.toString())){
-                cacheRepository.updateCacheEntity("CLASS" + class_id_before_update.toString(), objectMapper.writeValueAsString(result));
+            if (cache_on && cacheRepository.isKeyExist("STUDENT" + id.toString())) {
+                cacheRepository.updateCacheEntity("STUDENT" + id.toString(), objectMapper.writeValueAsString(student));
+                if (cache_on && cacheRepository.isKeyExist("CLASS" + class_id_before_update.toString())) {
+                    cacheRepository.updateCacheEntity("CLASS" + class_id_before_update.toString(), objectMapper.writeValueAsString(result));
+                }
             }
         }
     }
 
     @Override
     public void deleteStudent(Integer id) throws JsonProcessingException {
-        Integer student_classRoom_id = studentRepository.getStudentById(id).getClass_id();
-        studentRepository.deleteStudent(id);
-        classRoomRepository.synchronizationClassAvg_countOfStudents(student_classRoom_id);
+        Student studentDelete = studentRepository.getStudentById(id);
+        if (studentDelete != null) {
+            Integer student_classRoom_id = studentRepository.getStudentById(id).getClass_id();
+            studentRepository.deleteStudent(id);
+            classRoomRepository.synchronizationClassAvg_countOfStudents(student_classRoom_id);
 
-        ClassRoom result = classRoomRepository.getClassRoomById(student_classRoom_id) ;
+            ClassRoom result = classRoomRepository.getClassRoomById(student_classRoom_id);
 
-        if (cache_on && cacheRepository.isKeyExist("STUDENT" + id.toString())) {
-            cacheRepository.removeKey("STUDENT" + id.toString());
-            if(cache_on && cacheRepository.isKeyExist("CLASS" + student_classRoom_id.toString())){
-                cacheRepository.updateCacheEntity("CLASS" + student_classRoom_id.toString(), objectMapper.writeValueAsString(result));
+            if (cache_on && cacheRepository.isKeyExist("STUDENT" + id.toString())) {
+                cacheRepository.removeKey("STUDENT" + id.toString());
+                if (cache_on && cacheRepository.isKeyExist("CLASS" + student_classRoom_id.toString())) {
+                    cacheRepository.updateCacheEntity("CLASS" + student_classRoom_id.toString(), objectMapper.writeValueAsString(result));
+                }
             }
         }
     }
@@ -104,10 +114,12 @@ public class StudentService implements IStudentService{
             }
 
             Student result = studentRepository.getStudentById(id);
-
-            if (cache_on) {
-                cacheRepository.createCacheEntity("STUDENT" + id.toString(), objectMapper.writeValueAsString(result));
+            if(result != null) {
+                if (cache_on) {
+                    cacheRepository.createCacheEntity("STUDENT" + id.toString(), objectMapper.writeValueAsString(result));
+                }
             }
+
             return result;
 
         } catch (JsonProcessingException e) {
