@@ -49,12 +49,21 @@ public class DemoApplication {
 			classRoomRepository.createClassRoom(new ClassRoom(0,0,0.0f, ClassRoomType.REGULAR));
 			classRoomRepository.createClassRoom(new ClassRoom(0,0,0.0f, ClassRoomType.EXTERNAL));
 			classRoomRepository.createClassRoom(new ClassRoom(0,0,0.0f, ClassRoomType.REGULAR));
+			classRoomRepository.createClassRoom(new ClassRoom(0,0,0.0f, ClassRoomType.EXTERNAL));
+			classRoomRepository.createClassRoom(new ClassRoom(0,0,0.0f, ClassRoomType.REGULAR));
+
 
 			studentService.createStudent(new Student(0,"Ayoub","Diala",100.0f,StudentGender.FEMALE,1));
 			studentService.createStudent(new Student(0,"Abutbul","Tal",100.0f,StudentGender.MALE,2));
 			studentService.createStudent(new Student(0,"Cohen","Yaniv",100.0f,StudentGender.MALE,3));
 			studentService.createStudent(new Student(0,"Dassi","Dassi",100.0f,StudentGender.FEMALE,4));
-			studentService.createStudent(new Student(0,"Levi","Danny",80.0f,StudentGender.MALE,1));
+			studentService.createStudent(new Student(0,"Levi","Danny",50.0f,StudentGender.FEMALE,5));
+			studentService.createStudent(new Student(0,"Alder","Rony",75.5f,StudentGender.MALE,5));
+			studentService.createStudent(new Student(0,"Levi","Suzi",85.0f,StudentGender.FEMALE,5));
+			studentService.createStudent(new Student(0,"Hauptman","Itay",92.0f,StudentGender.MALE,6));
+			studentService.createStudent(new Student(0,"Fain","Marina",61.0f,StudentGender.FEMALE,6));
+			studentService.createStudent(new Student(0,"Dadon","Karmeet",72.0f,StudentGender.FEMALE,2));
+
 		};
 	}
 
