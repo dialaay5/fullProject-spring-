@@ -71,13 +71,13 @@ public class StudentRepository implements IStudentRepository {
 
     @Override
     public List<Student> getAllStudents() {
-        String query = String.format("Select * from %s", STUDENT_TABLE_NAME);
+        String query = String.format("Select * from %s ORDER BY id ASC ", STUDENT_TABLE_NAME);
         return jdbcTemplate.query(query, new StudentMapper());
     }
 
     @Override
     public Student getStudentById(Integer id) {
-        String query = String.format("Select * from %s where id=?", STUDENT_TABLE_NAME);
+        String query = String.format("Select * from %s where id=? ORDER BY id ASC ", STUDENT_TABLE_NAME);
         try {
             return jdbcTemplate.queryForObject(query, new StudentMapper(), id);
         }

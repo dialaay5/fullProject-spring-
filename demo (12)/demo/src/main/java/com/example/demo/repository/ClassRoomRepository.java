@@ -74,7 +74,7 @@ public class ClassRoomRepository implements IClassRoomRepository{
 
     @Override
     public List<ClassRoom> getAllClassRooms() {
-        String query = String.format("Select * from %s", CLASSROOM_TABLE_NAME);
+        String query = String.format("Select * from %s ORDER BY id ASC ", CLASSROOM_TABLE_NAME);
         return jdbcTemplate.query(query, new ClassRoomMapper());
     }
 
